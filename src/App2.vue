@@ -109,7 +109,8 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style lang="sass">
+ @import '~vuetify/src/styles/main.sass';
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
