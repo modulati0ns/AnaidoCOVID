@@ -68,7 +68,7 @@ export default {
       appId: "1:54511310540:web:2ba52244709f6dd3c25469",
     };
     // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
+    initializeApp(firebaseConfig);
     const dbRef = fbRef(getDatabase());
 
     const lineChart = {
