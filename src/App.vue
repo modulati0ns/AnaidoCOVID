@@ -1,28 +1,26 @@
 <template>
-  <v-app>
-    <v-main style="width: 100rem" class="justify-center pa-6 m-3">
-      <v-container align="center">
-        <v-card class="justify-center text-center pa-6 m-3">
-          <v-containter class="spacing-playground p-6 m-3" fluid>
+  <v-app style="background: rgb(var(--v-theme-surface-variant))">
+    <v-main style="align-items: flex-start" class="pa-6 m-3">
+      <v-container style="max-width: 90rem" align="center">
+        <v-card class="justify-center text-center pa-9 m-3">
+          <v-containter class="spacing-playground p-8 m-3" fluid>
             <v-row class="justify-center">
               <h1>Anaida Covid</h1>
             </v-row>
             <v-row>
               <v-col>
-                <v-btn @click="selectJavi">Javi</v-btn>
+                <v-btn @click="selectJavi"><h2>Javi</h2></v-btn>
               </v-col>
               <v-col>
-                <v-btn @click="selectAnaida">Anaida</v-btn>
+                <v-btn @click="selectAnaida"><h2>Anaida</h2></v-btn>
               </v-col>
             </v-row>
             <v-spacer />
-            <v-row>
+            <v-row class="wrapper">
               <vue3-chart-js ref="chartRef" v-bind="{ ...lineChart }" />
             </v-row>
-            <v-template
-              v-if="selectedUser == 'Javi' || selectedUser == 'Anaida'"
-            >
-              <v-row>
+            <v-template v-if="selectedUser == 'Javi' || selectedUser == 'Anaida'">
+              <v-row class="mt-8">
                 <v-col cols="10">
                   <v-text-field
                     v-model="temperatureValueToAdd"
@@ -42,180 +40,154 @@
   </v-app>
 </template>
 
-<script script lang="ts">
+<script setup>
 import { reactive, onMounted, ref } from "vue";
 import Vue3ChartJs from "@j-t-mcc/vue3-chartjs";
 import zoomPlugin from "chartjs-plugin-zoom";
-import dataLabels from "chartjs-plugin-datalabels";
 import "chartjs-adapter-moment";
 import { initializeApp } from "firebase/app";
 import { getDatabase, ref as fbRef, child, get, set } from "firebase/database";
 Vue3ChartJs.registerGlobalPlugins([zoomPlugin]);
-export default {
-  name: "App",
-  components: {
-    Vue3ChartJs,
-  },
-  setup() {
-    // Variables de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyAab2bG-GFO9tuzF4mSEqTt0vwa4cTr458",
-      authDomain: "anaidacovid.firebaseapp.com",
-      databaseURL: "https://anaidacovid-default-rtdb.firebaseio.com",
-      projectId: "anaidacovid",
-      storageBucket: "anaidacovid.appspot.com",
-      messagingSenderId: "54511310540",
-      appId: "1:54511310540:web:2ba52244709f6dd3c25469",
-    };
-    // Initialize Firebase
-    initializeApp(firebaseConfig);
-    const dbRef = fbRef(getDatabase());
 
-    const lineChart = {
-      type: "line",
-      // locally registered and available for this chart
-      plugins: [dataLabels],
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: "Temperatura corporal",
-            data: [],
-            fill: false,
-            borderColor: "#41B883",
-            backgroundColor: "black",
-          },
-        ],
+// Variables de Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyAab2bG-GFO9tuzF4mSEqTt0vwa4cTr458",
+  authDomain: "anaidacovid.firebaseapp.com",
+  databaseURL: "https://anaidacovid-default-rtdb.firebaseio.com",
+  projectId: "anaidacovid",
+  storageBucket: "anaidacovid.appspot.com",
+  messagingSenderId: "54511310540",
+  appId: "1:54511310540:web:2ba52244709f6dd3c25469",
+};
+
+// Initialize Firebase
+initializeApp(firebaseConfig);
+const dbRef = fbRef(getDatabase());
+
+const lineChart = {
+  type: "line",
+  // locally registered and available for this chart
+  data: {
+    labels: [],
+    datasets: [
+      {
+        label: "Temperatura corporal",
+        data: [],
+        fill: false,
+        borderColor: "#41B883",
+        backgroundColor: "black",
       },
-      options: {
-        scales: {
-          x: {
-            type: "time",
-            time: {
-              displayFormats: {
-                quarter: "MMM YYYY",
-              },
-            },
-          },
-          y: {
-            min: 36,
-            max: 39,
+    ],
+  },
+  options: {
+    scales: {
+      x: {
+        type: "time",
+        time: {
+          displayFormats: {
+            quarter: "MMM YYYY",
           },
         },
-        plugins: {
-          zoom: {
-            zoom: {
-              wheel: {
-                enabled: false,
-              },
-              pinch: {
-                enabled: true,
-              },
-              mode: "y",
-            },
+      },
+      y: {
+        min: 36,
+        max: 39,
+      },
+    },
+    plugins: {
+      zoom: {
+        zoom: {
+          wheel: {
+            enabled: false,
           },
-          // datalabels: {
-          //   backgroundColor: function (context) {
-          //     return context.dataset.backgroundColor;
-          //   },
-          //   borderRadius: 4,
-          //   color: "white",
-          //   font: {
-          //     weight: "bold",
-          //   },
-          //   formatter: Math.round,
-          //   padding: 6,
-          // },
+          pinch: {
+            enabled: true,
+          },
+          mode: "y",
         },
       },
-    };
-    const chartRef = ref(null);
-
-    const users = ["Javi", "Anaida"];
-    const selectedUser = ref(null);
-    const temperatureValueToAdd = ref(null);
-
-    onMounted(() => {
-      console.log("beforeMount hook!");
-      setInterval(function () {
-        chartRef.value.update(250);
-      }, 1000);
-    });
-
-    const rawData = reactive([]);
-
-    return {
-      rawData,
-      temperatureValueToAdd,
-      selectedUser,
-      users,
-      lineChart,
-      chartRef,
-      dbRef,
-    };
-  },
-  methods: {
-    selectUserFuncion() {
-      this.rawData = [];
-      console.log(this.selectedUser);
-      let user = "";
-      if (this.selectedUser == "Javi") {
-        user = "dataJavi";
-      } else {
-        user = "dataAnaida";
-      }
-      var dates = [];
-      var temps = [];
-      get(child(this.dbRef, user))
-        .then((snapshot) => {
-          if (snapshot.exists()) {
-            // Obtain dates from dataProcessed Array
-            for (var i = 0; i < snapshot.val().length; i++) {
-              dates.push(snapshot.val()[i].date);
-              temps.push(snapshot.val()[i].temp);
-              this.rawData.push({
-                date: snapshot.val()[i].date,
-                temp: snapshot.val()[i].temp,
-              });
-            }
-          } else {
-            console.log("No data available");
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      this.lineChart.data.labels = dates;
-      this.lineChart.data.datasets[0].data = temps;
-    },
-    selectAnaida() {
-      this.selectedUser = "Anaida";
-      this.selectUserFuncion();
-    },
-    selectJavi() {
-      this.selectedUser = "Javi";
-      console.log(this.selectedUser == "Javi");
-      this.selectUserFuncion();
-    },
-    addTemperature() {
-      let user = "";
-      if (this.selectedUser == "Javi") {
-        user = "dataJavi";
-      } else {
-        user = "dataAnaida";
-      }
-
-      console.log(this.rawData);
-      this.rawData.push({
-        date: new Date().toISOString().toString(),
-        temp: this.temperatureValueToAdd,
-      });
-      console.log(this.rawData);
-      const db = getDatabase();
-      set(fbRef(db, user), this.rawData);
-
-      this.selectUserFuncion();
     },
   },
 };
+
+const chartRef = ref(null);
+
+let selectedUser = ref(null);
+let temperatureValueToAdd = ref(null);
+let rawData = reactive([]);
+
+onMounted(() => {
+  setInterval(function () {
+    chartRef.value.update(250);
+  }, 1000);
+});
+
+function selectUserFuncion() {
+  rawData = [];
+
+  var user = "";
+  if (selectedUser.value == "Javi") {
+    user = "dataJavi";
+  } else {
+    user = "dataAnaida";
+  }
+  var dates = [];
+  var temps = [];
+  get(child(dbRef, user))
+    .then((snapshot) => {
+      if (snapshot.exists()) {
+        // Obtain dates from dataProcessed Array
+        for (var i = 0; i < snapshot.val().length; i++) {
+          dates.push(snapshot.val()[i].date);
+          temps.push(snapshot.val()[i].temp);
+          rawData.push({
+            date: snapshot.val()[i].date,
+            temp: snapshot.val()[i].temp,
+          });
+        }
+      } else {
+        console.log("No data available");
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  lineChart.data.labels = dates;
+  lineChart.data.datasets[0].data = temps;
+}
+
+function selectAnaida() {
+  selectedUser.value = "Anaida";
+  selectUserFuncion();
+}
+
+function selectJavi() {
+  selectedUser.value = "Javi";
+  selectUserFuncion();
+}
+
+function addTemperature() {
+  let user = "";
+  if (selectedUser.value == "Javi") {
+    user = "dataJavi";
+  } else {
+    user = "dataAnaida";
+  }
+
+  rawData.push({
+    date: new Date().toISOString().toString(),
+    temp: temperatureValueToAdd.value,
+  });
+
+  const db = getDatabase();
+  set(fbRef(db, user), rawData);
+
+  selectUserFuncion();
+}
 </script>
+
+<style>
+/* .wrapper {
+  height: 500px !important;
+} */
+</style>
