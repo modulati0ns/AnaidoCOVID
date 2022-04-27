@@ -185,9 +185,3 @@ function addTemperature() {
   selectUserFuncion();
 }
 </script>
-
-<style>
-/* .wrapper {
-  height: 500px !important;
-} */
-</style>
