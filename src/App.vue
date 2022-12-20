@@ -51,13 +51,12 @@ Vue3ChartJs.registerGlobalPlugins([zoomPlugin]);
 
 // Variables de Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyAab2bG-GFO9tuzF4mSEqTt0vwa4cTr458",
-  authDomain: "anaidacovid.firebaseapp.com",
-  databaseURL: "https://anaidacovid-default-rtdb.firebaseio.com",
-  projectId: "anaidacovid",
-  storageBucket: "anaidacovid.appspot.com",
-  messagingSenderId: "54511310540",
-  appId: "1:54511310540:web:2ba52244709f6dd3c25469",
+  apiKey: "AIzaSyCAma9PeZlkqCzkch9wT6NisdWMIPTJ-oU",
+  authDomain: "anaidacovid-18bbc.firebaseapp.com",
+  projectId: "anaidacovid-18bbc",
+  storageBucket: "anaidacovid-18bbc.appspot.com",
+  messagingSenderId: "779192310492",
+  appId: "1:779192310492:web:0e6d044590e77bab34b219",
 };
 
 // Initialize Firebase
@@ -76,6 +75,7 @@ const lineChart = {
         fill: false,
         borderColor: "#41B883",
         backgroundColor: "black",
+        tension: 0.4,
       },
     ],
   },
@@ -84,9 +84,7 @@ const lineChart = {
       x: {
         type: "time",
         time: {
-          displayFormats: {
-            quarter: "MMM YYYY",
-          },
+          unit: "hour",
         },
       },
       y: {
